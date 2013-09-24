@@ -1,0 +1,4 @@
+# utils
+
+window.Utils = 
+  hoge: ""

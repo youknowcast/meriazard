@@ -1,0 +1,7 @@
+# master 登録用batch はコミットしない
+models/createDB.*
+
+# mongodb の中身はコミットしない
+mongodb/
+
+
