@@ -28,7 +28,9 @@ app.use express.errorHandler()  if "development" is app.get("env")
 
 # url mapping.
 app.get "/", routes.index
-app.get "/users", user.login
+app.post "/users", user.login
+app.get "/list", user.list
+app.get "/list/search", user.search
 
 http.createServer(app).listen app.get("port"), ->
   console.log "Express server listening on port " + app.get("port")
