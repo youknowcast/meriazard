@@ -45,9 +45,13 @@ if ("development" === app.get("env")) {
   app.use(express.errorHandler());
 }
 
-app.get("/", routes.index);
-
 app.post("/users", user.login);
+
+app.post("/upload", user.upload);
+
+app.post("/download", user.download);
+
+app.get("/", routes.index);
 
 app.get("/list", user.list);
 

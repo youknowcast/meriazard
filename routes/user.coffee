@@ -2,9 +2,14 @@
 #
 # * GET users listing.
 # 
+fs = require('fs')
+mongoose = require('mongoose')
+_ = require('underscore')
+
 models = require('../models/models')
 Utils = require('./utils').Utils
 User = models.User
+Doc = models.Doc
 
 LOGIN_KEYS = ["input_id", "input_passwd"]
 
@@ -36,28 +41,39 @@ exports.list = (req, res) ->
 exports.search = (req, res) ->
   res.contentType('application/json');
   # fixme session check
-
   # test data
-  _data = [
-    {
-      no: 1
-      filename: 'test_file.zip'
-      size: 100
-      created: new Date
-    }
-    {
-      no: 2
-      filename: 'test_file2.zip'
-      size: 100
-      created: new Date
-    }
-    {
-      no: 3
-      filename: 'test_file3.zip'
-      size: 100
-      created: new Date
-    }
-  ]
+  _data = []
+  _i = 0
+  Doc.find {}, (err, docs) ->
+    _.each docs, (d) ->
+      _i += 1
+      _data.push 
+        no: _i
+        filename: d.name
+        size: d.size
+        content_type: if d.file.content_type then d.file.content_type else ""
+        created: d.create_at
+    res.send _data
 
-  res.send _data
+# file を登録します
+exports.upload = (req, res) ->
+  # fixme マルチ読み込み
+  # fixme HTML5 File API を使u
+  file = req.files.register_input
+  doc = new Doc
+  doc.name = file.name
+  doc.size = file.size
+  doc.file = 
+    data: fs.readFileSync(file.path)
+    content_type: file.headers["content-type"]
+  doc.create_at = new Date
+  doc.save (e) ->
+    console.log 'error' + e if e
+    res.render 'async_load'
+
+# file を download します．
+exports.download = (req, res) ->
+
+
+
 

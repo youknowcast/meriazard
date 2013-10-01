@@ -27,8 +27,11 @@ app.use express.static(path.join(__dirname, "public"))
 app.use express.errorHandler()  if "development" is app.get("env")
 
 # url mapping.
-app.get "/", routes.index
 app.post "/users", user.login
+app.post "/upload", user.upload
+app.post "/download", user.download
+
+app.get "/", routes.index
 app.get "/list", user.list
 app.get "/list/search", user.search
 

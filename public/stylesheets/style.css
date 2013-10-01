@@ -6,5 +6,11 @@ a {
   color: #00b7ff;
 }
 .inner-search-panel {
-  height: 300px;
+  height: 70px;
+}
+.search_panel_input_container {
+  padding: 5px;
+}
+input[type="file"] {
+  display: inline !important;
 }
