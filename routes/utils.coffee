@@ -18,3 +18,5 @@ exports.Utils =
       title: "Meriazard"
       url: (req.route.path).replace('/', '')
     conf
+  dateFormat: (o) ->
+    "test"

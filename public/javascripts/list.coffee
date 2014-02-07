@@ -4,7 +4,7 @@ $(->
   $searchInput = $('#search_input')
   $iframe = $('#async_load_frame')
   gridRowTmpl = '''
-  <tr>
+  <tr data-doc_id="{{ doc_id }}">
   <td class="column_no">{{ no }}</td>
   <td class="column_filename">{{ filename }}</td>
   <td class="column_size">{{ size }}</td>
@@ -12,7 +12,7 @@ $(->
   <td class="column_created">{{ created }}</td>
 </tr>
 '''
-  DEFAULT_INTERVAL = 100
+  DEFAULT_INTERVAL = 10
 
   # data を読みこんで，grid を更新します．
   search = () ->
@@ -41,12 +41,40 @@ $(->
       $tbdy = $grid.find('tbody')
       ((_o, _i) ->
         setTimeout () ->
-          $tbdy.append _.template gridRowTmpl, o
+          $tbdy.append _.template gridRowTmpl, _o
         , DEFAULT_INTERVAL * _i
       )(o, i++)
 
-  onDblClickRow = () ->
-    alert 'show detail.'
+  onDblClickRow = (e) ->
+    # file API をチェック
+    # unless window.File
+    #   alert "cannot use file download.."
+    #   return
+    dblClicked = $(e.currentTarget).data('doc_id')
+
+    # create hidden iframe, and submit to this.
+    _iframe = document.createElement("iframe")
+    _iframe.name = "hidden_frame"
+    _iframe.style.display = "none"
+    _iframe.onload = () =>
+
+    document.body.appendChild(_iframe)
+
+    # create form to submit.
+    _form = document.createElement('form')
+    _form.name = "hidden_form"
+    _form.action = "/download/#{ dblClicked }"
+    _form.target = _iframe.name
+    _form.style.display = "none";
+    document.body.appendChild(_form);
+
+    _form.submit()
+
+    # and delete form.
+    document.body.removeChild(_form)
+
+    daycrift.view.loadingDialog()
+
 
   # 検索します
   $searchInput

@@ -6,8 +6,8 @@ $(function() {
   $grid = $('#grid');
   $searchInput = $('#search_input');
   $iframe = $('#async_load_frame');
-  gridRowTmpl = '<tr>\n<td class="column_no">{{ no }}</td>\n<td class="column_filename">{{ filename }}</td>\n<td class="column_size">{{ size }}</td>\n<td class="column_type">{{ content_type }}</td>\n<td class="column_created">{{ created }}</td>\n</tr>';
-  DEFAULT_INTERVAL = 100;
+  gridRowTmpl = '<tr data-doc_id="{{ doc_id }}">\n<td class="column_no">{{ no }}</td>\n<td class="column_filename">{{ filename }}</td>\n<td class="column_size">{{ size }}</td>\n<td class="column_type">{{ content_type }}</td>\n<td class="column_created">{{ created }}</td>\n</tr>';
+  DEFAULT_INTERVAL = 10;
   search = function() {
     var _query, _url;
     _url = '/list/search';
@@ -31,13 +31,29 @@ $(function() {
       $tbdy = $grid.find('tbody');
       return (function(_o, _i) {
         return setTimeout(function() {
-          return $tbdy.append(_.template(gridRowTmpl, o));
+          return $tbdy.append(_.template(gridRowTmpl, _o));
         }, DEFAULT_INTERVAL * _i);
       })(o, i++);
     });
   };
-  onDblClickRow = function() {
-    return alert('show detail.');
+  onDblClickRow = function(e) {
+    var dblClicked, _form, _iframe,
+      _this = this;
+    dblClicked = $(e.currentTarget).data('doc_id');
+    _iframe = document.createElement("iframe");
+    _iframe.name = "hidden_frame";
+    _iframe.style.display = "none";
+    _iframe.onload = function() {};
+    document.body.appendChild(_iframe);
+    _form = document.createElement('form');
+    _form.name = "hidden_form";
+    _form.action = "/download/" + dblClicked;
+    _form.target = _iframe.name;
+    _form.style.display = "none";
+    document.body.appendChild(_form);
+    _form.submit();
+    document.body.removeChild(_form);
+    return daycrift.view.loadingDialog();
   };
   $searchInput.on('change', function(e) {});
   $iframe.on('load', function() {

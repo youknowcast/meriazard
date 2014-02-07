@@ -27,5 +27,8 @@ exports.Utils = {
       url: req.route.path.replace('/', '')
     };
     return conf;
+  },
+  dateFormat: function(o) {
+    return "test";
   }
 };

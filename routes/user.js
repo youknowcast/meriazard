@@ -54,10 +54,11 @@ exports.search = function(req, res) {
       _i += 1;
       return _data.push({
         no: _i,
+        doc_id: d._id,
         filename: d.name,
         size: d.size,
         content_type: d.file.content_type ? d.file.content_type : "",
-        created: d.create_at
+        created: Utils.dateFormat(d.create_at)
       });
     });
     return res.send(_data);
@@ -68,7 +69,7 @@ exports.upload = function(req, res) {
   var doc, file;
   file = req.files.register_input;
   doc = new Doc;
-  doc.name = file.name;
+  doc.name = encodeUriComponent(file.name);
   doc.size = file.size;
   doc.file = {
     data: fs.readFileSync(file.path),
@@ -83,4 +84,22 @@ exports.upload = function(req, res) {
   });
 };
 
-exports.download = function(req, res) {};
+exports.download = function(req, res) {
+  var _id;
+  _id = req.params.doc_id;
+  return Doc.find({
+    _id: _id
+  }, function(err, docs) {
+    var _file;
+    if (err) {
+      return res.send("");
+    } else {
+      _file = docs[0];
+      res.setHeader('Content-disposition', 'attachment; filename=' + _file.name);
+      res.setHeader('Content-type', _file.file.content_type);
+      res.setHeader('Content-Length', _file.size);
+      res.write(_file.file.data, 'binary');
+      return res.end();
+    }
+  });
+};

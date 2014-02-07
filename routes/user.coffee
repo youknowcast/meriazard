@@ -49,10 +49,11 @@ exports.search = (req, res) ->
       _i += 1
       _data.push 
         no: _i
+        doc_id: d._id
         filename: d.name
         size: d.size
         content_type: if d.file.content_type then d.file.content_type else ""
-        created: d.create_at
+        created: Utils.dateFormat( d.create_at )
     res.send _data
 
 # file を登録します
@@ -61,7 +62,7 @@ exports.upload = (req, res) ->
   # fixme HTML5 File API を使u
   file = req.files.register_input
   doc = new Doc
-  doc.name = file.name
+  doc.name = encodeUriComponent file.name
   doc.size = file.size
   doc.file = 
     data: fs.readFileSync(file.path)
@@ -73,7 +74,17 @@ exports.upload = (req, res) ->
 
 # file を download します．
 exports.download = (req, res) ->
-
+  _id = req.params.doc_id
+  Doc.find {_id: _id}, (err, docs) ->
+    if err
+      res.send ""
+    else
+      _file = docs[0]
+      res.setHeader('Content-disposition', 'attachment; filename=' + _file.name )
+      res.setHeader('Content-type', _file.file.content_type);
+      res.setHeader('Content-Length', _file.size);
+      res.write(_file.file.data, 'binary')
+      res.end()
 
 
 

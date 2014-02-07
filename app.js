@@ -49,7 +49,7 @@ app.post("/users", user.login);
 
 app.post("/upload", user.upload);
 
-app.post("/download", user.download);
+app.get("/download/:doc_id", user.download);
 
 app.get("/", routes.index);
 
