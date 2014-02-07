@@ -69,7 +69,7 @@ exports.upload = function(req, res) {
   var doc, file;
   file = req.files.register_input;
   doc = new Doc;
-  doc.name = encodeUriComponent(file.name);
+  doc.name = file.name;
   doc.size = file.size;
   doc.file = {
     data: fs.readFileSync(file.path),

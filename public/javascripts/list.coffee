@@ -56,8 +56,6 @@ $(->
     _iframe = document.createElement("iframe")
     _iframe.name = "hidden_frame"
     _iframe.style.display = "none"
-    _iframe.onload = () =>
-
     document.body.appendChild(_iframe)
 
     # create form to submit.
@@ -66,14 +64,24 @@ $(->
     _form.action = "/download/#{ dblClicked }"
     _form.target = _iframe.name
     _form.style.display = "none";
-    document.body.appendChild(_form);
+    document.body.appendChild(_form)
 
+    # set cookie to remove loading dialog when response is back from sv.
+    $.cookie("loading", '1')
     _form.submit()
 
     # and delete form.
     document.body.removeChild(_form)
 
     daycrift.view.loadingDialog()
+    _interval = setInterval () ->
+      _cookie = $.cookie('loading')
+      if _cookie == '1'
+        # set flag off.
+        $.cookie('loading', '0')
+        daycrift.view.loadingDialog('remove')
+        clearInterval _interval
+    , 50
 
 
   # 検索します
@@ -83,6 +91,7 @@ $(->
 
   $iframe
     .on 'load', () ->
+      console.log "start reload."
       search()
 
   $grid

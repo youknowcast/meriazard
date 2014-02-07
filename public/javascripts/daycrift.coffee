@@ -1,11 +1,14 @@
-window.daycrift |= {}
-daycrift.view |= {}
+window.daycrift ||= {}
+daycrift.view ||= {}
 
 view = daycrift.view
 
+overlayTmpl = '<div id="overlay"></div><div id="message"></div>'
+$overlay = null
+
 view.loadingDialog = (opt) ->
   unless opt
-    $overlay = $('<div id="overlay"><div id="message"></div></div>')
-    $overlay
-      .appendTo(document)
+    $('body').append( $(overlayTmpl) )
     return
+  if opt == 'remove'
+    $( '#overlay, #message' ).remove()

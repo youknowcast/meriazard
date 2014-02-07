@@ -1,6 +1,8 @@
 WORKSPACE=/Users/youknow/workspace/meriazard
 
 cd $WORKSPACE
+
+
 ## coffee compile
 coffee -cb . 
 

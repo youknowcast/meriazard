@@ -37,13 +37,11 @@ $(function() {
     });
   };
   onDblClickRow = function(e) {
-    var dblClicked, _form, _iframe,
-      _this = this;
+    var dblClicked, _form, _iframe, _interval;
     dblClicked = $(e.currentTarget).data('doc_id');
     _iframe = document.createElement("iframe");
     _iframe.name = "hidden_frame";
     _iframe.style.display = "none";
-    _iframe.onload = function() {};
     document.body.appendChild(_iframe);
     _form = document.createElement('form');
     _form.name = "hidden_form";
@@ -51,12 +49,23 @@ $(function() {
     _form.target = _iframe.name;
     _form.style.display = "none";
     document.body.appendChild(_form);
+    $.cookie("loading", '1');
     _form.submit();
     document.body.removeChild(_form);
-    return daycrift.view.loadingDialog();
+    daycrift.view.loadingDialog();
+    return _interval = setInterval(function() {
+      var _cookie;
+      _cookie = $.cookie('loading');
+      if (_cookie === '1') {
+        $.cookie('loading', '0');
+        daycrift.view.loadingDialog('remove');
+        return clearInterval(_interval);
+      }
+    }, 50);
   };
   $searchInput.on('change', function(e) {});
   $iframe.on('load', function() {
+    console.log("start reload.");
     return search();
   });
   $grid.on('dblclick', 'tr', onDblClickRow);
