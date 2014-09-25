@@ -39,12 +39,27 @@ exports.list = (req, res) ->
 
 # 一覧表示 読み込み
 exports.search = (req, res) ->
-  res.contentType('application/json');
-  # fixme session check
-  # test data
+  res.contentType('application/json')
   _data = []
   _i = 0
   Doc.find {}, (err, docs) ->
+    _.each docs, (d) ->
+      _i += 1
+      _data.push 
+        no: _i
+        doc_id: d._id
+        filename: d.name
+        size: d.size
+        content_type: if d.file.content_type then d.file.content_type else ""
+        created: Utils.dateFormat( d.create_at )
+    res.send _data
+
+exports.searchQuery = (req, res) ->
+  res.contentType('application/json')
+  _query = {name: req.params.query}
+  _data = []
+  _i = 0
+  Doc.find _query, (err, docs) ->
     _.each docs, (d) ->
       _i += 1
       _data.push 
@@ -72,6 +87,7 @@ exports.upload = (req, res) ->
     console.log 'error' + e if e
     res.render 'async_load'
 
+
 # file を download します．
 exports.download = (req, res) ->
   _id = req.params.doc_id
@@ -80,11 +96,10 @@ exports.download = (req, res) ->
       res.send ""
     else
       _file = docs[0]
-      res.setHeader('Content-disposition', 'attachment; filename=' + _file.name )
+      res.setHeader('Content-disposition', 'attachment; filename*=UTF-8\'\'' + encodeURIComponent(_file.name) )
       res.setHeader('Content-type', _file.file.content_type);
       res.setHeader('Content-Length', _file.size);
       res.write(_file.file.data, 'binary')
       res.end()
-
 
 

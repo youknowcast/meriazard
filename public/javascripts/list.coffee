@@ -3,6 +3,7 @@ $(->
   $grid = $('#grid')
   $searchInput = $('#search_input')
   $iframe = $('#async_load_frame')
+  $searchForm = $('#search_panel')
   gridRowTmpl = '''
   <tr data-doc_id="{{ doc_id }}">
   <td class="column_no">{{ no }}</td>
@@ -15,9 +16,10 @@ $(->
   DEFAULT_INTERVAL = 10
 
   # data を読みこんで，grid を更新します．
-  search = () ->
-    # fixme 検索条件取得
+  search = (query) ->
     _url = '/list/search'
+    if query
+      _url += "/#{ query }"
     _query = []
     _url += concreteQuery(_query) if _query.length > 0
 
@@ -83,11 +85,17 @@ $(->
         clearInterval _interval
     , 50
 
+  $searchForm
+    .on 'submit', (e) ->
+      false
+      # cancel onsubmit.
 
   # 検索します
   $searchInput
     .on 'change', (e) ->
-#      search() unless $searchInput.val().text/ / isnt yes
+      _input = $(e.target)
+      search( _input.val() )
+
 
   $iframe
     .on 'load', () ->

@@ -19,7 +19,10 @@ Doc = new mongoose.Schema
   file: 
     data: Buffer
     content_type: String
+  attributes: 
+    type:  { type: String }
   create_at: { type: Date, default: Date.now }
 
 exports.User = db.model('User', User)
 exports.Doc = db.model('Doc', Doc)
+
