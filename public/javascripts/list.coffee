@@ -5,15 +5,17 @@ $(->
   $iframe = $('#async_load_frame')
   $searchForm = $('#search_panel')
   gridRowTmpl = '''
-  <tr data-doc_id="{{ doc_id }}">
+  <tr data-doc_id="{{ doc_id }}" data-filename="{{ filename }}">
   <td class="column_no">{{ no }}</td>
   <td class="column_filename">{{ filename }}</td>
   <td class="column_size">{{ size }}</td>
   <td class="column_type">{{ content_type }}</td>
   <td class="column_created">{{ created }}</td>
+  <td class="column_edit"><span class="btn btn-default glyphicon glyphicon-minus-sign" alt="削除"></span></td>
 </tr>
 '''
   DEFAULT_INTERVAL = 10
+
 
   # data を読みこんで，grid を更新します．
   search = (query) ->
@@ -46,6 +48,18 @@ $(->
           $tbdy.append _.template gridRowTmpl, _o
         , DEFAULT_INTERVAL * _i
       )(o, i++)
+
+  onDelete = (e) ->
+    docId = $(e.currentTarget).closest("tr").data('doc_id')
+    filename = $(e.currentTarget).closest("tr").data('filename') 
+    if window.confirm("ファイル「#{filename}」を削除します．よろしいですか．")
+      $.ajax
+        type: 'POST'
+        url: "/list/#{docId}"
+        data:
+          _method: 'DELETE'
+      .always () ->
+        search()
 
   onDblClickRow = (e) ->
     # file API をチェック
@@ -104,7 +118,8 @@ $(->
 
   $grid
     .on 'dblclick', 'tr', onDblClickRow
-
+    .on('click','tr .glyphicon-minus-sign', onDelete)
+  
   search()
 )
 

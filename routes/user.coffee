@@ -102,4 +102,8 @@ exports.download = (req, res) ->
       res.write(_file.file.data, 'binary')
       res.end()
 
+exports.destroy = (req, res) ->
+  _id = req.params.id
+  Doc.find({_id: _id}).remove().exec()
+  res.end('ok')
 

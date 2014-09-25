@@ -59,6 +59,8 @@ app.get("/list/search", user.search);
 
 app.get("/list/search/:query", user.searchQuery);
 
+app["delete"]("/list/:id", user.destroy);
+
 http.createServer(app).listen(app.get("port"), function() {
   return console.log("Express server listening on port " + app.get("port"));
 });

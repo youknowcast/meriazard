@@ -127,3 +127,12 @@ exports.download = function(req, res) {
     }
   });
 };
+
+exports.destroy = function(req, res) {
+  var _id;
+  _id = req.params.id;
+  Doc.find({
+    _id: _id
+  }).remove().exec();
+  return res.end('ok');
+};
