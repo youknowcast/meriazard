@@ -101,9 +101,7 @@ exports.upload = function(req, res) {
   var doc, file, filePath;
   file = req.files.register_input;
   filePath = FILE_PREFIX + checksum(fs.readFileSync(file.path));
-  fs.rename(file.path, filePath, function(err) {
-    throw err;
-  });
+  fs.renameSync(file.path, filePath);
   doc = new Doc;
   doc.name = file.name;
   doc.size = file.size;
@@ -140,8 +138,14 @@ exports.download = function(req, res) {
 exports.destroy = function(req, res) {
   var _id;
   _id = req.params.id;
-  Doc.find({
+  return Doc.findOne({
     _id: _id
-  }).remove().exec();
-  return res.end('ok');
+  }, function(err, data) {
+    if (err) {
+      throw err;
+    }
+    fs.unlinkSync(data.path);
+    data.remove();
+    return res.end('ok');
+  });
 };

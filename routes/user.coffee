@@ -82,9 +82,7 @@ exports.upload = (req, res) ->
   file = req.files.register_input
   filePath = FILE_PREFIX + checksum(fs.readFileSync(file.path))
   # path 名で保存
-  fs.rename(file.path, filePath, (err) ->
-    throw err
-  )
+  fs.renameSync(file.path, filePath)
   doc = new Doc
   doc.name = file.name
   doc.size = file.size
@@ -111,6 +109,10 @@ exports.download = (req, res) ->
 
 exports.destroy = (req, res) ->
   _id = req.params.id
-  Doc.find({_id: _id}).remove().exec()
-  res.end('ok')
+  Doc.findOne({_id: _id}, (err, data) ->
+    throw err if err
+    fs.unlinkSync(data.path)
+    data.remove()
+    res.end('ok')
+  )
 

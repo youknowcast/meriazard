@@ -6,3 +6,4 @@ mongodb/
 files/*
 
 mongo\.log.*
+*.swp

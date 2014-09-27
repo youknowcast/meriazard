@@ -13,12 +13,24 @@ User = new mongoose.Schema
   passwd: { type: String }
   create_at: { type: Date, default: Date.now }
 
+# 作者情報
+Author = new mongoose.Schema
+  names: [String]
+  show_name: String
+
+# 作品傾向
+Type = new mongoose.Schema
+  name: [String]
+  refs: [Type]
+  comment: String
+
 Doc = new mongoose.Schema
   name: { type: String, validate: [validator, "Empty Error"] }
   size: { type: String }
   path: { type: String }
   attributes: 
-    type:  { type: String }
+    type:  { type: [Type] }
+    author: {type: [Author]}
   content_type: { type: String }
   create_at: { type: Date, default: Date.now }
 
