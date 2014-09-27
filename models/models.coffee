@@ -16,11 +16,10 @@ User = new mongoose.Schema
 Doc = new mongoose.Schema
   name: { type: String, validate: [validator, "Empty Error"] }
   size: { type: String }
-  file: 
-    data: Buffer
-    content_type: String
+  path: { type: String }
   attributes: 
     type:  { type: String }
+  content_type: { type: String }
   create_at: { type: Date, default: Date.now }
 
 exports.User = db.model('User', User)

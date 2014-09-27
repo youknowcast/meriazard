@@ -5,6 +5,7 @@
 fs = require('fs')
 mongoose = require('mongoose')
 _ = require('underscore')
+crypto = require('crypto')
 
 models = require('../models/models')
 Utils = require('./utils').Utils
@@ -12,6 +13,7 @@ User = models.User
 Doc = models.Doc
 
 LOGIN_KEYS = ["input_id", "input_passwd"]
+FILE_PREFIX = './files/F_'
 
 # login
 exports.login = (req, res) ->
@@ -50,7 +52,7 @@ exports.search = (req, res) ->
         doc_id: d._id
         filename: d.name
         size: d.size
-        content_type: if d.file.content_type then d.file.content_type else ""
+        content_type: d.content_type
         created: Utils.dateFormat( d.create_at )
     res.send _data
 
@@ -67,23 +69,28 @@ exports.searchQuery = (req, res) ->
         doc_id: d._id
         filename: d.name
         size: d.size
-        content_type: if d.file.content_type then d.file.content_type else ""
+        content_type: d.content_type
         created: Utils.dateFormat( d.create_at )
     res.send _data
 
+checksum = (str) ->
+  crypto.createHash('md5').update(str, 'binary').digest('hex')
+
+
 # file を登録します
 exports.upload = (req, res) ->
-  # fixme マルチ読み込み
-  # fixme HTML5 File API を使u
   file = req.files.register_input
+  filePath = FILE_PREFIX + checksum(fs.readFileSync(file.path))
+  # path 名で保存
+  fs.rename(file.path, filePath, (err) ->
+    throw err
+  )
   doc = new Doc
   doc.name = file.name
   doc.size = file.size
-  doc.file = 
-    data: fs.readFileSync(file.path)
-    content_type: file.headers["content-type"]
-  doc.create_at = new Date
-  doc.save (e) ->
+  doc.path = filePath
+  doc.content_type = file.headers["content-type"]
+  doc.create_at = new Date doc.save (e) ->
     console.log 'error' + e if e
     res.render 'async_load'
 
@@ -97,9 +104,9 @@ exports.download = (req, res) ->
     else
       _file = docs[0]
       res.setHeader('Content-disposition', 'attachment; filename*=UTF-8\'\'' + encodeURIComponent(_file.name) )
-      res.setHeader('Content-type', _file.file.content_type);
+      res.setHeader('Content-type', _file.content_type);
       res.setHeader('Content-Length', _file.size);
-      res.write(_file.file.data, 'binary')
+      res.write(fs.readFileSync(_file.path), 'binary')
       res.end()
 
 exports.destroy = (req, res) ->

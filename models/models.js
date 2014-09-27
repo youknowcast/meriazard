@@ -37,14 +37,16 @@ Doc = new mongoose.Schema({
   size: {
     type: String
   },
-  file: {
-    data: Buffer,
-    content_type: String
+  path: {
+    type: String
   },
   attributes: {
     type: {
       type: String
     }
+  },
+  content_type: {
+    type: String
   },
   create_at: {
     type: Date,
