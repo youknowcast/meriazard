@@ -1,0 +1,36 @@
+<h2>日付とキーワードを入力して送信ボタンをクリックしてください。</h2>
+
+<form phx-submit="submit">
+Keyword:
+<input type="text" name="keyword" value="<%= @keyword %>"
+     placeholder="Elixir" />
+<br>
+Keyword: <%= @keyword %> | 
+全<%= @maxcnt %>件 <br>
+<input type="submit" name="search" onclick="blur()" />
+</form>
+
+<table>
+<tr>
+    <th>画像</th>
+    <th>メモ</th>
+    <th>タグ</th>
+    <th></th>
+</tr>
+<%= for result <- @results do %>
+<tr>
+    <td>
+        <img src=<%= result["url"] %> />
+    </td>
+    <td>
+        <%= result["memo"] %>
+    </td>
+    <td>
+        <%= result["tag"] %>
+    </td>
+    <td>
+        <button >削除</button>
+    </td>
+</tr>
+<% end %>
+</table>
