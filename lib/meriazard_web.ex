@@ -21,7 +21,7 @@ defmodule MeriazardWeb do
 
   def router do
     quote do
-      use Phoenix.Router, helpers: false
+      use Phoenix.Router, helpers: true
 
       # Import common connection and controller functions to use in pipelines
       import Plug.Conn
@@ -30,6 +30,9 @@ defmodule MeriazardWeb do
     end
   end
 
+  @spec channel ::
+          {:use, [{:column, 7} | {:context, MeriazardWeb} | {:imports, [...]}, ...],
+           [{:__aliases__, [...], [...]}, ...]}
   def channel do
     quote do
       use Phoenix.Channel
@@ -90,11 +93,16 @@ defmodule MeriazardWeb do
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
 
+      alias MeriazardWeb.Router.Helpers, as: Routes
+
       # Routes generation with the ~p sigil
       unquote(verified_routes())
     end
   end
 
+  @spec verified_routes ::
+          {:use, [{:column, 7} | {:context, MeriazardWeb} | {:imports, [...]}, ...],
+           [[{any, any}, ...] | {:__aliases__, [...], [...]}, ...]}
   def verified_routes do
     quote do
       use Phoenix.VerifiedRoutes,
