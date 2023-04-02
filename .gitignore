@@ -1,5 +1,9 @@
+# ref. https://github.com/recluze/phoenix-liveview-example/blob/master/.gitignore
+
 # The directory Mix will write compiled artifacts to.
 /_build/
+/test/
+/priv/
 
 # If you run "mix test --cover", coverage assets end up here.
 /cover/
@@ -19,11 +23,8 @@ erl_crash.dump
 # Also ignore archive artifacts (built via "mix archive.build").
 *.ez
 
-# Temporary files, for example, from tests.
-/tmp/
-
 # Ignore package tarball (built via "mix hex.build").
-meriazard-*.tar
+yak-*.tar
 
 # Ignore assets that are produced by build tools.
 /priv/static/assets/
@@ -35,7 +36,4 @@ meriazard-*.tar
 npm-debug.log
 /assets/node_modules/
 
-# Database files
-*.db
-*.db-*
-
+*.db*
